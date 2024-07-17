@@ -5,23 +5,21 @@ from flask import Flask, session, redirect, url_for, request, render_template, a
 # For .env files in Python
 # https://www.geeksforgeeks.org/how-to-create-and-use-env-files-in-python/
 import os
-from dotenv import load_dotenv, dotenv_values
+from dotenv import load_dotenv
 load_dotenv()
 
 
 app = Flask(__name__)
 
 """
-VULNERABILITY
+VULNERABILITY #1
 Type: Secrets
 Description:
     Secret string (for logging) public in repository.
 Prevention:
     Easiest way is to store this key in a file not included in the
     repo. This file would need to be added to the .gitignore before
-    any further commits are made (this is done on my fork of the
-    repository). The original, unsecure line is on the original
-    forked commit.
+    any further commits are made (though this is already the case).
 """
 app.secret_key = os.getenv("LOG_KEY")
 app.logger.setLevel(logging.INFO)
@@ -41,17 +39,51 @@ def is_authenticated():
 
 def authenticate(username, password):
     connection = get_db_connection()
-    users = connection.execute("SELECT * FROM users").fetchall()
-    connection.close()
 
-    for user in users:
-        if user["username"] == username and user["password"] == password:
-            app.logger.info(f"the user '{username}' logged in successfully with password '{password}'")
-            session["username"] = username
-            return True
+    """
+    VULNERABILITY #2
+    Type: Credentials in Client
+    Description:
+        Due to the `SELECT * FROM users`, all rows from the users table
+        is loaded onto the client side, which eliminates the security from
+        the (hopefully) secure external database. Although third-party
+        authentification is becoming more and more standard with many companies
+        forgoing any risk of dealing with credentials, this authenticate function
+        will maintain its intended behavior.
 
-    app.logger.warning(f"the user '{ username }' failed to log in '{ password }'")
-    abort(401)
+        This code makes the assumption that usernames are unique. The username
+        and password also need to be sanitized to prevent SQL Injection in this case,
+        as we are passing user data into the query.
+        Real Python's article on preventing injection attacks:
+        https://realpython.com/prevent-python-sql-injection/
+        About sqlite3 cursor:
+        https://www.tutorialspoint.com/python_data_access/python_sqlite_cursor_object.htm
+
+        The logging of the password is also somewhat insecure, but I left that
+        in as to not significantly alter the logging output from the original repo.
+    """
+
+    # Use sqlite3's cursor object to determine whether a username/password was valid
+    cursor = connection.cursor()
+    
+    # Use sanitized query, treating username and passwords as strings, not queries
+    # Do filter on the database side, not the client
+    cursor.execute(
+        "SELECT * FROM users WHERE username = ? AND password = ?",
+        (username, password)
+    )
+    
+    # Check if the query result was empty/truthy
+    result = cursor.fetchone()
+    if result:
+        # If result exists, use same code as before
+        app.logger.info(f"the user '{username}' logged in successfully with password '{password}'")
+        session["username"] = username
+        return True
+    else:
+        # Otherwise, log the attempt and return code 401: Unauthorized
+        app.logger.warning(f"the user '{ username }' failed to log in '{ password }'")
+        abort(401)
 
 
 @app.route("/")
