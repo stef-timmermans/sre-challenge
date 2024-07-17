@@ -2,9 +2,28 @@ import sqlite3
 import logging
 from flask import Flask, session, redirect, url_for, request, render_template, abort
 
+# For .env files in Python
+# https://www.geeksforgeeks.org/how-to-create-and-use-env-files-in-python/
+import os
+from dotenv import load_dotenv, dotenv_values
+load_dotenv()
+
 
 app = Flask(__name__)
-app.secret_key = b"192b9bdd22ab9ed4d12e236c78afcb9a393ec15f71bbf5dc987d54727823bcbf"
+
+"""
+VULNERABILITY
+Type: Secrets
+Description:
+    Secret string (for logging) public in repository.
+Prevention:
+    Easiest way is to store this key in a file not included in the
+    repo. This file would need to be added to the .gitignore before
+    any further commits are made (this is done on my fork of the
+    repository). The original, unsecure line is on the original
+    forked commit.
+"""
+app.secret_key = os.getenv("LOG_KEY")
 app.logger.setLevel(logging.INFO)
 
 
