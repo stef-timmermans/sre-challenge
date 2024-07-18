@@ -76,9 +76,10 @@ def authenticate(username, password):
     # Check if the query result was empty/truthy
     result = cursor.fetchone()
     if result:
-        # If result exists, use same code as before
+        # If result exists, use same logic as before in setting session state
         app.logger.info(f"the user '{username}' logged in successfully with password '{password}'")
         session["username"] = username
+        # Signal to caller that user has logged in
         return True
     else:
         # Otherwise, log the attempt and return code 401: Unauthorized
