@@ -45,7 +45,7 @@ USER appuser
 COPY . .
 
 # Expose the port that the application listens on.
-EXPOSE 5000
+EXPOSE 5001
 
 # Run the application.
-CMD flask --app application run
+CMD flask --app application run --host=0.0.0.0 --port=5001

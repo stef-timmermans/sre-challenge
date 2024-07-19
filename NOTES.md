@@ -1,3 +1,10 @@
+# Running Dockerfile
+
+1. Change directory into `app`
+2. Excute command `docker compose up --build`
+3. View application on `http://localhost:5001`
+4. Close project gracefully with `Ctrl+C`
+
 # Vulerabilities Found
 
 ### #1: Public secret string assignment in `application.py` for logging key.
