@@ -20,6 +20,10 @@ Prevention:
     Easiest way is to store this key in a file not included in the
     repo. This file would need to be added to the .gitignore before
     any further commits are made (though this is already the case).
+    This method still has a relatively high potential of user error
+    in handling the .env file, so production applications that may
+    be attacked should follow more modern and robust solutions than
+    this one.
 """
 app.secret_key = os.getenv("LOG_KEY")
 app.logger.setLevel(logging.INFO)
@@ -59,8 +63,8 @@ def authenticate(username, password):
         About sqlite3 cursor:
         https://www.tutorialspoint.com/python_data_access/python_sqlite_cursor_object.htm
 
-        The logging of the password is also somewhat insecure, but I left that
-        in as to not significantly alter the logging output from the original repo.
+        Logging passwords is inherently unsafe, as it creates a physical liability, so
+        that element of the logic was removed.
     """
 
     # Use sqlite3's cursor object to determine whether a username/password was valid
@@ -77,13 +81,15 @@ def authenticate(username, password):
     result = cursor.fetchone()
     if result:
         # If result exists, use same logic as before in setting session state
-        app.logger.info(f"the user '{username}' logged in successfully with password '{password}'")
+        # Removed logging of password
+        app.logger.info(f"the user '{username}' logged in successfully")
         session["username"] = username
         # Signal to caller that user has logged in
         return True
     else:
         # Otherwise, log the attempt and return code 401: Unauthorized
-        app.logger.warning(f"the user '{ username }' failed to log in '{ password }'")
+        # Removed logging of password
+        app.logger.warning(f"the user '{ username }' failed to log in")
         abort(401)
 
 
