@@ -1,54 +1,87 @@
-# Warpnet SRE Challenge
+# Warpnet SRE Challenge: Stef Timmermans
+This file is outlines my changes to the directory. For the original documentation see `ORIGINAL_README.md`. 
 
-Welcome to the Site Reliability Engineering (SRE) challenge, where your SRE skills will be put to the test. You'll deploy an application in both a traditional and Kubernetes environment, showcasing your ability to orchestrate complex systems. From defining Kubernetes manifests to fixing bugs and ensuring good observability, this challenge mirrors real-world scenarios encountered by our SREs. Whether you're a seasoned professional or a newcomer eager to explore complex cloud environments, this challenge offers platform to demonstrate your expertise.
+Changes include main app logic to make the application more secure and providing means of varied deployments.
 
-## Instructions
+<br>
 
-Your goal is to deploy the included Python application directly in a local Kubernetes cluster. The application may contain some bugs and vulnerabilities.
+# Managing Kubernetes Cluster
+**Requires Docker Desktop and minikube**
 
-You can use to following command to start the application:
-```bash
-cd app
-pip install -r requirements.txt
-flask --app application run
-```
+1. Start a local cluster: `minikube start`
+2. Tell minikube to use the local Docker daemon (i.e., not to look for a remote registry): `eval $(minikube -p minikube docker-env)`
+3. Change directory into the application: `cd app`
+4. Build the Docker image without executing it: `docker-compose build`
+5. Verify that the image "app-server" exists with `docker images`
+5. Apply the configuration files using kubectl
+    - `kubectl apply -f deployment.yaml`
+    - `kubectl apply -f service.yaml`
+6. Access the application: `minikube service server`
+7. Close the tunnel with `Ctrl+C`
+8. Stop the minikube cluster: `minikube stop`
+9. To re-view, repeat from Step 1
 
-Test the application by opening [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser.
+<br>
 
-You're allowed to modify the included application as you see fit.
+# Running Docker Container in Isolation 
+**Requires Docker Desktop**
 
-## Objectives
+1. Change directory into the application: `cd app`
+2. Execute command `docker compose up --build`
+3. View application on `http://localhost:5001`
+4. Stop gracefully with `Ctrl+C`
 
-In this challenge, you'll navigate through a series of objectives designed to assess your proficiency as an SRE. Each objective is crafted to highlight specific aspects of your skills.
+<br>
 
-- Functionality
-- Simplicity
-- Readability
-- Extensibility
-- Maintainability
-- Observability
-- Security
+# Virtualization Process (Apple Silicon)
 
-As you embark on the SRE challenge, we want to emphasize that the objective is not to stress about achieving perfection on every front. Our primary goal is to gain insights into you current skillset and problem-solving approach within the realm of Site Reliability Engineering. Recognize that the challenge may be multifaceted, and it's perfectly acceptable to prioritize certain objectives over others. This challenge is an opportunity for you to demonstrate your existing skills and learning, providing valuable insights into your capabilities as an SRE professional.
+1. Install Ubuntu Server for target architecture: https://docs.getutm.app/guides/ubuntu/
+2. Install and open UTM (FOSS for macOS with Apple Silicon support), and create new VM
+3. Choose "Virtualize" from main menu (choose "Emulate" if wanting to use different architecture)
+4. Choose "Linux" and attach downloaded Ubuntu image to "Boot ISO Image", leave rest default
+5. Continue on with initialization and choose appropriate storage option (~16+ GB)
+6. If on Apple Silicon installing for Virtualization with Ubuntu Server...
+    - Under the Ubuntu VM options, go to configurations (top right) and move the VirtIO Drive to be above the USB Drive
+    - After hitting Save, click on the CD/DVD dropdown and hit Clear, it should now display "(empty)"
+    - For more information see this Issues thread: https://github.com/utmapp/UTM/discussions/3716
+7. Hit the play button on the VM and follow instructions to setup Ubuntu installation (use OpenSSH)
+8. Repeat Step 6 if still buggy... you should now see a login prompt
+9. After verifying that the installation works, enter `shutdown now` to safely close the virtual machine if you wish
+10. From this point forward, it is likely easiest to continue via SSH-ing into Ubuntu Server through a more modern terminal on your main machine (such as iTerm 2), which can be done through `ssh username@ip` so long as the target server is active
+11. Install any dependencies (such as git and python3), generate an SSH key for GitHub if necessary, and clone the repository
+12. If configured correctly, the Flask application should run via the Virtual Machine using similar commands to `ORIGINAL_README.md` and be accessible on the network, which are:
+    1. `python3 -m venv venv` (Ubuntu forces virtual environments for safety)
+    2. `source venv/bin/activate`
+    3. `cd app`
+    4. `pip install -r requirements.txt`
+    5. `flask --app application run --host=0.0.0.0`
+    6. `Ctrl+C` to return to the terminal
+    7. `deactivate` to close the virtual environment
 
-## Challenge
+<br>
 
-A lot of enterprise organizations make the transition from traditional virtual machines to deployments in a Kubernetes based infrastructure.
-Automation, security, architecture, quality of code are main subjects during this transition. This challenge is all about simulating that. There are a three main assignments that you need to do during this challenge:
+# Vulerabilities Found
 
-- Deploy the app on a traditional VM.
-- Look into the application code and make adjustments that you think are necessary.
-- Deploy the app on a Kubernetes environment.
+### #1: Public secret string assignment in `application.py` for logging key.
 
-You are free to choose which tools and methods you use during this challenge. Keep in mind that you should show the listed aspects under [Objectives](#objectives) in your solution.
+*Moved string to `.env` in app. File was already gitignore'd.*
 
-## Tips and tricks
+### #2: SQL query in `application.py` for login returned all rows in the users table to the client.
 
-Below you'll find a few quick tips to get your environment up and running. If you are more comfortable using other kind of tools, feel free to use them!
+*Modified logic to make a sanitized query on the connection where only the relevant row (or none) is accessible by the client-side code.*
 
-- [Vagrant](https://www.vagrantup.com/): a tool that allows you to quickly setup a dev environment based on virtual machines.
-- [MiniKube](https://minikube.sigs.k8s.io/docs/): in general Kubernetes requires a lot of resources, MiniKube helps you setting up a local cluster on your workstation.
+<br>
 
-## Get Involved
+# Software Used
 
-[Explore open jobs at Warpnet](https://warpnet.nl/jobs/) or take a look at our [featured projects](https://github.com/warpnet). Visit [warpnet.nl](https://warpnet.nl/) to learn more!
+- Docker Desktop
+- minikube
+- kubectl
+- kompose
+- UTM
+
+<br>
+
+# Dependencies Added
+
+- `python-dotenv` version `1.0.1` for dotenv
