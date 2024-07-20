@@ -1,9 +1,37 @@
-# Running Dockerfile
+# SRE Challenge: Stef Timmermans
+This file is effectively a second README that describes the modifications made on my fork of the repository.
 
-1. Change directory into `app`
-2. Excute command `docker compose up --build`
+Changes include modifications to the main app logic to make the application more secure and providing means of varied deployments.
+
+<br>
+
+# Managing Kubernetes Cluster
+**Requires Docker Desktop and minikube.**
+
+1. Start a local cluster: `minikube start`
+2. Tell minicube to use the local Docker daemon (i.e., not to look for a remote registry): `eval $(minikube -p minikube docker-env)`
+3. Change directory into the application: `cd app`
+4. Build the Docker image without executing it: `docker-compose build`
+5. Verify that the image "app-server" exists with `docker images`
+5. Apply the configuration files using kubectl
+  - `kubectl apply -f deployment.yaml`
+  - `kubectl apply -f service.yaml`
+6. Access the application: `minikube service server`
+7. Close the tunnel with `Ctrl+C`
+8. Stop the minikube cluster: `minikube stop`
+9. To re-view, repeat from Step 1
+
+<br>
+
+# Running Docker Container in Isolation 
+**Requires Docker Desktop.**
+
+1. Change directory into the application: `cd app`
+2. Execute command `docker compose up --build`
 3. View application on `http://localhost:5001`
-4. Close project gracefully with `Ctrl+C`
+4. Stop gracefully with `Ctrl+C`
+
+<br>
 
 # Vulerabilities Found
 
@@ -17,12 +45,15 @@
 
 <br>
 
-# Dependencies Added on Fork
+# Software Used
 
-Installed `python-dotenv` version `1.0.1` for dotenv.
+- Docker Desktop
+- minikube
+- kubectl
+- kompose
 
 <br>
 
-# Personal Notes
+# Dependencies Added
 
-- I attempted to use the example Vagrant and Minikube software, but as I am developing on an Apple Silicon-based computer, I encountered spotty support and outdated dependencies for the ARM architecture. After trying Vagrant with VMware Fusion and VirtualBox, and facing persistent `vagrant up` errors despite extensive research on GitHub Issues, I opted for more widely supported software like Docker to set up the containerization process for the Kubernetes cluster. Note that I do have a Windows laptop, but it is much less powerful than my MacBook, and my workstation is configured around the latter's Thunderbolt 4 I/O.
+Installed `python-dotenv` version `1.0.1` for dotenv.
