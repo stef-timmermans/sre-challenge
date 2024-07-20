@@ -33,6 +33,22 @@ Changes include modifications to the main app logic to make the application more
 
 <br>
 
+# Virtualization Process
+
+1. Install Ubuntu Server for target architecture: https://docs.getutm.app/guides/ubuntu/
+2. Install and open UTM (FOSS for macOS with Apple Silicon support), and create new VM
+3. Choose "Virtualize" from main menu (choose "Emulate" if wanting to use different architecture)
+4. Choose "Linux" and attach downloaded Ubuntu image to "Boot ISO Image", leave rest default
+5. Continue on with initialization and choose appropriate storage option (~16+ GB)
+6. If on Apple Silicon installing for Virtualization with Ubuntu Server...
+  - Under the Ubuntu VM options, go configurations (top right) and move VirtIO Drive to be above the USB Drive
+  - After hitting Save, click on the CD/DVD dropdown and hit Clear, it should now display "(empty)"
+  - For more information see this Issues thread: https://github.com/utmapp/UTM/discussions/3716
+6. Hit the play button on the VM and follow instructions to setup Ubuntu installation (use OpenSSH)
+7. Repeat Step 6 if still buggy... you should now see a login promt
+8. After verifying that installation works, enter `shutdown now` to safely close the virtual machine
+9. Now install any dependencies (such as git and python3), generate an SSH key for GitHub if necessary, and clone the repository. If configured correctly, the Flask application should run via the Virtual Machine and should be accessible on the network.
+
 # Vulerabilities Found
 
 ### #1: Public secret string assignment in `application.py` for logging key.
@@ -51,6 +67,7 @@ Changes include modifications to the main app logic to make the application more
 - minikube
 - kubectl
 - kompose
+- UTM
 
 <br>
 
