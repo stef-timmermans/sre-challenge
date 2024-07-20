@@ -49,7 +49,14 @@ Changes include main app logic to make the application more secure and providing
 8. After verifying that the installation works, enter `shutdown now` to safely close the virtual machine if you wish
 9. From this point forward, it is likely easiest to continue via SSH-ing into Ubuntu Server through a more traditional terminal (such as iTerm 2), which can be done through `ssh username@ip` so long as the target server is active
 10. Install any dependencies (such as git and python3), generate an SSH key for GitHub if necessary, and clone the repository
-11. If configured correctly, the Flask application should run via the Virtual Machine via the original commands in `README.md` and be accessible on the network
+11. If configured correctly, the Flask application should run via the Virtual Machine via similar commands in `README.md` and be accessible on the network, which are:
+    1. `python3 -m venv venv` (Ubuntu forces virtual environments unlike macOS and Windows)
+    2. `source venv/bin/activate`
+    3. `cd app`
+    4. `pip install -r requirements.txt`
+    5. `flask --app application run --host=0.0.0.0`
+    6. `Ctrl+C` to return to the terminal
+    7. `deactivate` to close virtual environment
 
 <br>
 
