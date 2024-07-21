@@ -64,7 +64,7 @@ Changes include main app logic to make the application more secure and providing
 
 ### #1: Public secret string assignment in `application.py` for logging key.
 
-*Moved string to `.env` in app. File was already gitignore'd.*
+*Moved string to `.env` in app. File was already gitignore'd. `database.db` was also removed from the repository for vulnerability reasons.*
 
 ### #2: SQL query in `application.py` for login returned all rows in the users table to the client.
 
