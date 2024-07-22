@@ -1,7 +1,7 @@
 # Warpnet SRE Challenge: Stef Timmermans
-This file is outlines my changes to the directory. For the original documentation see `ORIGINAL_README.md`. 
+This file outlines my changes to the directory. For the original documentation see `ORIGINAL_README.md`. 
 
-Changes include main app logic to make the application more secure and providing means of varied deployments.
+Changes include the main app logic to make the application more secure and providing means of varied deployments.
 
 <br>
 
@@ -44,7 +44,7 @@ Changes include main app logic to make the application more secure and providing
     - Under the Ubuntu VM options, go to configurations (top right) and move the VirtIO Drive to be above the USB Drive
     - After hitting Save, click on the CD/DVD dropdown and hit Clear, it should now display "(empty)"
     - For more information see this Issues thread: https://github.com/utmapp/UTM/discussions/3716
-7. Hit the play button on the VM and follow instructions to setup Ubuntu installation (use OpenSSH)
+7. Hit the play button on the VM and follow instructions to set up Ubuntu installation (use OpenSSH)
 8. Repeat Step 6 if still buggy... you should now see a login prompt
 9. After verifying that the installation works, enter `shutdown now` to safely close the virtual machine if you wish
 10. From this point forward, it is likely easiest to continue via SSH-ing into Ubuntu Server through a more modern terminal on your main machine (such as iTerm 2), which can be done through `ssh username@ip` so long as the target server is active
@@ -60,7 +60,7 @@ Changes include main app logic to make the application more secure and providing
 
 <br>
 
-# Vulerabilities Found
+# Vulnerabilities Found
 
 ### #1: Public secret string assignment in `application.py` for logging key.
 
