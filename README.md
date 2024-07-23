@@ -8,28 +8,30 @@ Changes include the main app logic to make the application more secure and provi
 # Managing Kubernetes Cluster
 **Requires Docker Desktop and minikube**
 
-1. Start a local cluster: `minikube start`
-2. Tell minikube to use the local Docker daemon (i.e., not to look for a remote registry): `eval $(minikube -p minikube docker-env)`
-3. Change directory into the application: `cd app`
-4. Build the Docker image without executing it: `docker-compose build`
-5. Verify that the image "app-server" exists with `docker images`
-5. Apply the configuration files using kubectl
+1. Ensure the local Docker daemon is running
+2. Start a local cluster: `minikube start`
+3. Tell minikube to use the local Docker daemon (i.e., not to look for a remote registry): `eval $(minikube -p minikube docker-env)`
+4. Change directory into the application: `cd app`
+5. Build the Docker image without executing it: `docker-compose build`
+6. Verify that the image "app-server" exists with `docker images`
+7. Apply the configuration files using kubectl
     - `kubectl apply -f deployment.yaml`
     - `kubectl apply -f service.yaml`
-6. Access the application: `minikube service server`
-7. Close the tunnel with `Ctrl+C`
-8. Stop the minikube cluster: `minikube stop`
-9. To re-view, repeat from Step 1
+8. Access the application: `minikube service server`
+9. Close the tunnel with `Ctrl+C`
+10. Stop the minikube cluster: `minikube stop`
+11. To re-view, repeat from Step 1
 
 <br>
 
 # Running Docker Container in Isolation 
 **Requires Docker Desktop**
 
-1. Change directory into the application: `cd app`
-2. Execute command `docker compose up --build`
-3. View application on `http://localhost:5001`
-4. Stop gracefully with `Ctrl+C`
+1. Ensure the local Docker daemon is running
+2. Change directory into the application: `cd app`
+3. Execute command `docker compose up --build`
+4. View application on `http://localhost:5001`
+5. Stop gracefully with `Ctrl+C`
 
 <br>
 
@@ -69,6 +71,10 @@ Changes include the main app logic to make the application more secure and provi
 ### #2: SQL query in `application.py` for login returned all rows in the users table to the client.
 
 *Modified logic to make a sanitized query on the connection where only the relevant row (or none) is accessible by the client-side code.*
+
+### #3: Database connection in `application.py` implicitly closed.
+
+*Explicitly closed connection at the end of the authentication logic as to not rely on sqlite3's garbage collection process to minimize resource use.*
 
 <br>
 

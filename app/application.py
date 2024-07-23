@@ -77,6 +77,22 @@ def authenticate(username, password):
         (username, password)
     )
     
+    """
+    VULNERABILITY #3
+    Type: Database Connection Not Released
+    Description:
+        Though more a practical vulnerability than a security one, the original
+        code did not close the database connection ("database.db") at the end
+        of the authentication logic. It is best practice to close a connection
+        when no longer in use rather than rely on sqlite3's automatic garbage
+        collector (i.e., the connection going out of scope at the end of this
+        function where it was created).
+
+        Keeping a connection open does not directly correlate to security issues, but
+        can lead to problems in terms of scalability and resource management. See:
+        https://stackoverflow.com/questions/312702/is-it-safe-to-keep-database-connections-open-for-long-time
+        https://www.reddit.com/r/learnpython/comments/ystjwc/database_connection_should_it_be_kept_open/
+    """
     # Check if the query result was empty/truthy
     result = cursor.fetchone()
     if result:
@@ -84,12 +100,22 @@ def authenticate(username, password):
         # Removed logging of password
         app.logger.info(f"the user '{username}' logged in successfully")
         session["username"] = username
+
+        # Close the connection
+        connection.close()
+
         # Signal to caller that user has logged in
         return True
     else:
         # Otherwise, log the attempt and return code 401: Unauthorized
+
         # Removed logging of password
         app.logger.warning(f"the user '{ username }' failed to log in")
+
+        # Close the connection
+        connection.close()
+
+        # Signal HTTP 401: Unauthorized
         abort(401)
 
 
