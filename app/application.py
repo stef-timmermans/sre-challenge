@@ -15,7 +15,7 @@ app = Flask(__name__)
 VULNERABILITY #1
 Type: Secrets
 Description:
-    Secret string (for logging) public in repository.
+    Secret string (for database connection) public in repository.
 Prevention:
     Easiest way is to store this key in a file not included in the
     repo. This file would need to be added to the .gitignore before
